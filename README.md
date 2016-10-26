@@ -33,7 +33,7 @@ A log file will be created in /tmp.
 
 ## API Reference
 
-1. Find the number of seats available within the venue (the idea is to extend this further)
+#### Find the number of seats available within the venue (the idea is to extend this further)
 GET http://localhost:8080/v1/tickets?fields=count&state=avail
 
 HTTP/1.1 200 
@@ -43,7 +43,7 @@ Date: Wed, 26 Oct 2016 15:03:00 GMT
 
 { "seats" : { "available" : 100 } }
 
-2. Find and hold the best available seats on behalf of a customer
+#### Find and hold the best available seats on behalf of a customer
 POST http://localhost:8080/v1/tickets?num=3&email=a@b.com
 
 Response:
@@ -63,7 +63,7 @@ Date: Wed, 26 Oct 2016 15:03:14 GMT
   "noSeats": 3
 }
 
-3. Reserve and commit a specific group of held seats for a customer
+#### Reserve and commit a specific group of held seats for a customer
 PUT http://localhost:8080/v1/tickets/1001?email=x@y.com
 
 Response:
