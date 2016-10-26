@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <property name="LOG_FILE" value="/tmp/ticketservice.log}"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+    <logger name="org.kedar.ticketservice" level="DEBUG" />
+    <root level="DEBUG">
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
