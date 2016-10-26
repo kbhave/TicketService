@@ -11,77 +11,85 @@ Implement a Ticket Service that provides the following functions:
 3.  Reserve and commit a specific group of held seats for a customer
 ```
 
-# Code Example
+# Code
 
-## REST API:
-1. Find the number of seats available within the venue
-GET /v1/tickets/count
+The project uses Spring Boot to take advantage of embedded Tomcat, Starter POMs, and to create a single executable JAR. It uses Spring REST annotations to implement RestController and makes use of native Jackson for JSON responses, etc. It uses Maven as the build tool.
 
-2. Find and hold the best available seats on behalf of a customer
-GET /v1/tickets?count=3&cust=<email>&offset=0
+I had initially implemented this using the in-memory database H2 with JPA but then decided to keep it simple using simple Data Structures in memory, so in either case, no persistence was planned in the implementation.
 
-Response:
-{	“groupID”: <groupid>,
-	“custEmail”: <custEmail>,
-	“noTickets”: <no of tickets>,
-	“seatNos”: [ <seatID>, <seatID>, ..],
-	“holdTime”: <no of seconds>
-}
+SeatHold is a self-expiring object with a very rudimentary expiry logic (with a expired or not flag). I could have used caching options for SeatHold, which have built-in expiry logic - such as Ehcache - but kept my current implementation for simplicity.
 
-3. Reserve and commit a specific group of held seats for a customer
-POST /v1/tickets?
+Have used JUnit with Spring-test to unit test HTTP endpoints. I might not complete this part though due to time constraints.
 
 ## Installation
 
-Provide code examples and explanations of how to get the project.
+Build using the following command:
+mvn -U clean install
+
+Run using the command:
+java -jar target/ticketservice-1.0.0.jar
+
+A log file will be created in /tmp.
 
 ## API Reference
 
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
+1. Find the number of seats available within the venue (the idea is to extend this further)
+GET http://localhost:8080/v1/tickets?fields=count&state=avail
 
-## Tests
+HTTP/1.1 200 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 35
+Date: Wed, 26 Oct 2016 15:03:00 GMT
 
-Describe and show how to run the tests with code examples.
-
-## Contributors
-
-Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
-
-## License
-
-A short snippet describing the license (MIT, Apache, etc.)
-
-
-ASSUMPTIONS
-* We assume the theater has 100 seats with IDs from 1-100. 
-
-* Ideally you would have a Seat class to represent each seat. But to keep things simple, SeatHold has a seatIDs field which is simply a comma-delimited list of Seat numbers.
-
-REST API:
-1. Find the number of seats available within the venue
-GET /v1/tickets?fields=count&state=avail
+{ "seats" : { "available" : 100 } }
 
 2. Find and hold the best available seats on behalf of a customer
-GET /v1/tickets?count=3&cust=<email>&offset=0
+POST http://localhost:8080/v1/tickets?num=3&email=a@b.com
 
 Response:
-{	“groupID”: <groupid>,
-	“custEmail”: <custEmail>,
-	“noTickets”: <no of tickets>,
-	“seatNos”: [ <seatID>, <seatID>, ..],
-	“holdTime”: <no of seconds>
+HTTP/1.1 200 
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 26 Oct 2016 15:03:14 GMT
+
+{
+  "id": 1000,
+  "seatIDSet": [
+    1,
+    2,
+    3
+  ],
+  "email": "x@y.com",
+  "noSeats": 3
 }
 
 3. Reserve and commit a specific group of held seats for a customer
-POST /v1/tickets?
+PUT http://localhost:8080/v1/tickets/1001?email=x@y.com
 
+Response:
+HTTP/1.1 200 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 30
+Date: Wed, 26 Oct 2016 15:03:34 GMT
 
-Customer: Tickets required – 4
-System: 4 Tickets Held – 
+{ "reservation" : "R1002-3-x@y.com" }
 
-KNOWN LIMITATIONS:
-•	REST API can be improved - having something like -
-		/seats/count?state=avail instead of /tickets/count to get number of seats available
-		We can have separate controller handing /seats and /tickets URI space
-•	Seats are not on demand. So one can’t request a certain set of seats in the current implementation. But it can be done.
-•	SeatHolds are not released constantly. They are released when you either call numSeatsAvailable or findAndHoldSeats methods. This was done to minimize complexity and also since it wasn’t required to be done constantly for the purpose of this assignment.
+## Tests
+
+<Incomplete>
+
+## ASSUMPTIONS
+* We assume the theater has 100 seats with IDs from 1-100. There is no concept of rows.
+
+* Ideally you would have a Seat class to represent each seat. But to keep things simple, SeatHold has a seatIDs field which is simply a Set of Seat numbers.
+
+## KNOWN LIMITATIONS:
+* REST API definition can be improved - having something like -
+	/seats/count?state=avail instead of /tickets/count to get number of seats available
+	We can have separate controller handing /seats and /tickets URI space
+	Error handling can be improved
+* The API is not using SSL, auth tokens and such..
+* No filtering, sorting / paging has been implemented
+* Seats are not on demand. So one can’t request a certain set of seats in the current implementation. But it can be done.
+* SeatHolds are not released as soon as they expire. They are released when you either call numSeatsAvailable or findAndHoldSeats methods because that's when we manually check if they have expired. This was done to minimize complexity and also since it wasn’t required to be done constantly for the purpose of this assignment.
+* reserveSeats : Does not reserve "Best Available" seats. There is no algorithm considered/developed in this implementation to determine the quality of seats.
