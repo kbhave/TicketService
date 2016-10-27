@@ -17,17 +17,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Service Implementation of TicketService interface.
+ * @author kedar
+ *
+ */
 @Configuration
 public class TicketServiceImpl implements TicketService {
 	private static final Logger logger = LoggerFactory.getLogger(TicketServiceImpl.class);
 	Set<Integer> availSeats = new TreeSet<Integer>();	// Need the seats to be ordered
 	Set<Integer> reservedSeats = new HashSet<Integer>();
 	
-	//List<SeatHold> SHList = new ArrayList<SeatHold>();
 	Map<Integer, SeatHold> SHMap = new HashMap<Integer, SeatHold>();
 
+	/**
+	 * numSeatsAvailable
+	 * Purpose: find number of seats available (not held or reserved) at any given time
+	 */
 	@Override
-	public int numSeatsAvailable() {
+	public synchronized int numSeatsAvailable() {
 		this.refreshAvailableSeats();
 		int available = availSeats.size();
 		return available;
@@ -36,15 +44,15 @@ public class TicketServiceImpl implements TicketService {
 	/**
 	 * findAndHoldSeats
 	 * Purpose: find numSeats number of seats and hold them for this customer
+	 * 
 	 * 1. Get next numSeats number of seats first
-	 * 2. Create the new SeatHold object and add it to the SHList/SHMap
+	 * 2. Create the new SeatHold object and add it to the SHMap
 	 */
 	@Override
 	public synchronized SeatHold findAndHoldSeats(int numSeats, String customerEmail) {
 		Set<Integer> seatNos = getNextNSeats(numSeats);
 
 		SeatHold newSeatHold = new SeatHold(seatNos, customerEmail, numSeats);
-		//SHList.add(newSeatHold);
 		SHMap.put(newSeatHold.getId(), newSeatHold);
 		
 		return newSeatHold;
@@ -53,25 +61,7 @@ public class TicketServiceImpl implements TicketService {
 	 * refreshAvailableSeats
 	 * Purpose: Refresh the Available Seats because some holds might have expired
 	 */
-	private synchronized void refreshAvailableSeats() {
-		/*
-		Iterator<SeatHold> iter = SHList.iterator();
-		while (iter.hasNext()) {
-			SeatHold SH = iter.next();
-			if (SH.getExpired()) {
-				logger.debug(String.format(
-						"SeatHold with id %d has expired. Releasing %d seats", 
-						SH.getId(), 
-						SH.getNoSeats()));
-				availSeats.addAll(SH.getSeatIDSet());
-				iter.remove();
-			} else {
-				// Make sure the seats for this Hold are not in availSeats
-				availSeats.removeAll(SH.getSeatIDSet());
-			}
-		}
-		*/
-		
+	private void refreshAvailableSeats() {
 		Iterator<Integer> iterator = SHMap.keySet().iterator();
 		while (iterator.hasNext()) {
 			Integer SHId = iterator.next();
@@ -99,6 +89,11 @@ public class TicketServiceImpl implements TicketService {
 	 * getNextNSeats
 	 * Purpose: Get the specified number of seats from the Available seats
 	 * 
+	 * 1. Refresh the available seats (to make sure all the expired holds are gone)
+	 * 2. Make sure all reserved seats are erased from available seats set
+	 * 3. Return the required number of seats
+	 * 4. Remove these from available seats set
+	 * 
 	 * @param numSeats
 	 * @return
 	 */
@@ -125,6 +120,11 @@ public class TicketServiceImpl implements TicketService {
 
 	/**
 	 * reserveSeats
+	 * Purpose: Reserve seats from a given hold.
+	 * 
+	 * 1. Add to Reserved Seats set, 
+	 * 2. Remove from Available Seats set and 
+	 * 3. Remove the hold from the hold map.
 	 * 
 	 */
 	@Override
