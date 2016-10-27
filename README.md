@@ -24,6 +24,11 @@ Have used JUnit with Spring-test to unit test HTTP endpoints. I might not comple
 ## Error Handling
 Spring Boot provides the /error mapping by default to handle errors gracefully. I have also included a small method 'handleException' to handle specific exceptions like IllegalArgumentException and NullPointerException in the RestController.
 
+## Concurrency Issues
+I have made the three Service methods as synchronized methods in order to make them thread safe and get consistent results, given that the service bean is a Singleton scope by default in Spring.
+
+However, I have not thoroughly tested nor performance tested this from concurrency perspective.
+
 ## Installation and instructions to run
 
 Build using the following command:
@@ -108,6 +113,8 @@ Could not do more due to time constraints.
 * We assume the theater has 100 seats with IDs from 1-100. There is no concept of rows.
 
 * Ideally you would have a Seat class to represent each seat. But to keep things simple, SeatHold has a seatIDs field which is simply a Set of Seat numbers.
+
+* A user does not want to specify the exact seat numbers when placing a hold.
 
 ## KNOWN LIMITATIONS:
 * REST API definition can be improved - having something like -
