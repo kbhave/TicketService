@@ -21,12 +21,14 @@ SeatHold is a self-expiring object with a very rudimentary expiry logic (with a 
 
 Have used JUnit with Spring-test to unit test HTTP endpoints. I might not complete this part though due to time constraints.
 
-## Installation
+## Installation and instructions to run
 
 Build using the following command:
 mvn -U clean install
 
 Run using the command:
+mvn spring-boot:run
+or 
 java -jar target/ticketservice-1.0.0.jar
 
 A log file will be created in /tmp.
@@ -82,8 +84,21 @@ Date: Wed, 26 Oct 2016 15:03:34 GMT
 
 ## Tests
 
-- Incomplete -
-JUnit with sprint-test to
+#### Integration Testing using CURL
+```sh
+  - curl -i -X GET http://localhost:8080/v1/tickets?fields=count&state=avail
+
+  - curl -i -X POST http://localhost:8080/v1/tickets?num=3&email=a@b.com
+
+  - curl -i -X PUT http://localhost:8080/v1/tickets/{holdId}
+	holdId from the POST command for holding seats
+```
+
+#### Unit Tests
+```sh
+Implemented a couple of sample unit tests using JUnit, Mockito with sprint-test.
+Could not do more due to time constraints.
+```
 
 ## ASSUMPTIONS
 * We assume the theater has 100 seats with IDs from 1-100. There is no concept of rows.
