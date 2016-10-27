@@ -34,6 +34,7 @@ A log file will be created in /tmp.
 ## API Reference
 
 #### Find the number of seats available within the venue (the idea is to extend this further)
+```sh
 GET http://localhost:8080/v1/tickets?fields=count&state=avail
 
 HTTP/1.1 200 
@@ -42,8 +43,10 @@ Content-Length: 35
 Date: Wed, 26 Oct 2016 15:03:00 GMT
 
 { "seats" : { "available" : 100 } }
+```
 
 #### Find and hold the best available seats on behalf of a customer
+```sh
 POST http://localhost:8080/v1/tickets?num=3&email=a@b.com
 
 Response:
@@ -62,8 +65,10 @@ Date: Wed, 26 Oct 2016 15:03:14 GMT
   "email": "x@y.com",
   "noSeats": 3
 }
+```
 
 #### Reserve and commit a specific group of held seats for a customer
+```sh
 PUT http://localhost:8080/v1/tickets/1001?email=x@y.com
 
 Response:
@@ -73,10 +78,12 @@ Content-Length: 30
 Date: Wed, 26 Oct 2016 15:03:34 GMT
 
 { "reservation" : "R1002-3-x@y.com" }
+```
 
 ## Tests
 
-<Incomplete>
+- Incomplete -
+JUnit with sprint-test to
 
 ## ASSUMPTIONS
 * We assume the theater has 100 seats with IDs from 1-100. There is no concept of rows.
