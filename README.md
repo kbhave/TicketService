@@ -21,6 +21,9 @@ SeatHold is a self-expiring object with a very rudimentary expiry logic (with a 
 
 Have used JUnit with Spring-test to unit test HTTP endpoints. I might not complete this part though due to time constraints.
 
+## Error Handling
+Spring Boot provides the /error mapping by default to handle errors gracefully. I have also included a small method 'handleException' to handle specific exceptions like IllegalArgumentException and NullPointerException in the RestController.
+
 ## Installation and instructions to run
 
 Build using the following command:
@@ -85,6 +88,7 @@ Date: Wed, 26 Oct 2016 15:03:34 GMT
 ## Tests
 
 #### Integration Testing using CURL
+Have used Mocha in the past to do integration testing.
 ```sh
   - curl -i -X GET http://localhost:8080/v1/tickets?fields=count&state=avail
 
@@ -96,7 +100,7 @@ Date: Wed, 26 Oct 2016 15:03:34 GMT
 
 #### Unit Tests
 ```sh
-Implemented a couple of sample unit tests using JUnit, Mockito with sprint-test.
+Implemented a couple of sample unit tests using JUnit, Mockito with spring-test.
 Could not do more due to time constraints.
 ```
 
@@ -107,9 +111,9 @@ Could not do more due to time constraints.
 
 ## KNOWN LIMITATIONS:
 * REST API definition can be improved - having something like -
-	/seats/count?state=avail instead of /tickets/count to get number of seats available
+	/seats/count?state=avail instead of /tickets/count to get number of seats available. 
 	We can have separate controller handing /seats and /tickets URI space
-	Error handling can be improved
+	Error handling can be improved.
 * The API is not using SSL, auth tokens and such..
 * No filtering, sorting / paging has been implemented
 * Seats are not on demand. So one can’t request a certain set of seats in the current implementation. But it can be done.

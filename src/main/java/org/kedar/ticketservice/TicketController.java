@@ -1,6 +1,9 @@
 package org.kedar.ticketservice;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletResponse;
 
 import org.kedar.ticketservice.service.TicketService;
 import org.kedar.ticketservice.vo.SeatHold;
@@ -12,6 +15,8 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -90,7 +95,12 @@ public class TicketController {
 		String reservationId = this.ticketService.reserveSeats(seatHoldId, customerEmail);
 		return String.format("{ \"reservation\" : \"%s\" }", reservationId);
 	}
-
+	
+	@ExceptionHandler({IllegalArgumentException.class, NullPointerException.class})
+	void handleException(IllegalArgumentException e, HttpServletResponse response) throws IOException {
+	    response.sendError(HttpStatus.BAD_REQUEST.value());
+	}
+	
 	public TicketService getTicketService() {
 		return ticketService;
 	}
