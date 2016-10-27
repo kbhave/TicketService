@@ -149,6 +149,7 @@ public class TicketServiceImpl implements TicketService {
 	 */
 	@PostConstruct
 	private void initTheater() {
+		System.out.println("Here");
 		// Initialize all the seats in the theater
 		IntStream.rangeClosed(1, Constants.TOTAL_SEATS).forEach(
 				i ->  
