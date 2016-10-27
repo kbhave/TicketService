@@ -121,6 +121,7 @@ Could not do more due to time constraints.
 	/seats/count?state=avail instead of /tickets/count to get number of seats available. 
 	We can have separate controller handing /seats and /tickets URI space
 	Error handling can be improved.
+	JSON Response structure is not very consistent. Doesn't have a logical root element.
 * The API is not using SSL, auth tokens and such..
 * No filtering, sorting / paging has been implemented
 * Seats are not on demand. So one can’t request a certain set of seats in the current implementation. But it can be done.
